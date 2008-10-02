@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-require Dir.pwd + '/git_auth/lib/git_auth.rb'
+require Dir.pwd + '/git_auth/git_auth.rb'
 
 puts "============================================================"
 puts "Verifying commit for #{`whoami`.strip}"
@@ -8,7 +8,7 @@ puts "Verifying commit for #{`whoami`.strip}"
 while input = gets
         parts = input.split
 
-        puts "Evaluating : " +  parts.last.strip
+        puts "REF : " +  parts.last.strip
         if !GitAuth::Auth.has_rights? `whoami`.strip, parts.last.strip,'w'
                 exit 1
         end
