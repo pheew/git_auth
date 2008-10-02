@@ -1,10 +1,15 @@
 #!/usr/bin/env ruby
+require 'syslog'
+require 'pathname'
 
-exit 1
+log = Syslog.open('ssh_serve')
+log.debug("connection open")
+Syslog.close
 
-# require 'pathname'
-# base_dir = Pathname.new(File.dirname(__FILE__)).realpath
-# require File.join(base_dir , 'git_auth.rb')
+base_dir = Pathname.new(File.dirname(__FILE__)).realpath
+require File.join(base_dir , 'git_auth.rb')
 
-#GitAuth::Serve.serve
-
+GitAuth::Serve.serve
+log = Syslog.open('ssh_serve')
+log.debug("signing off")
+Syslog.close
