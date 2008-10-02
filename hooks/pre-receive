@@ -2,8 +2,7 @@
 
 require Dir.pwd + '/git_auth/git_auth.rb'
 
-puts "============================================================"
-puts "Verifying commit for #{`whoami`.strip}"
+
 
 while input = gets
         parts = input.split

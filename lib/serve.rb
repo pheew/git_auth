@@ -13,6 +13,7 @@ module GitAuth
 	  def self.serve
   		File.umask(0022)
 
+
   		# parse cmd line
   		OptionParser.new do |opts|
   			opts.banner = "Usage: 'serve.rb [OPTIONS] DIR'"
@@ -31,7 +32,8 @@ module GitAuth
 	    
 	    Log.debug("Original command : " + cmd)
 
-  		if cmd.include?('\n') 
+  		if cmd.include?('\n')
+  		  Log.debug("Newlines found in command")
   			Log.tell_user("No newlines allowed in command")
   			return 1
   		end
@@ -46,18 +48,36 @@ module GitAuth
   		allowed = COMMANDS_READONLY
   		allowed += COMMANDS_WRITE if !@options[:readonly]
   		
-  		Log.debug("Allowed : " + allowed.inspect);
-      Log.debug("New command : " + cmd);
+  		Log.debug("Allowed : " + allowed.inspect)
+      Log.debug("New command : " + cmd)
 
   		if( !allowed.include?(match[1]) )	
   			Log.tell_user("Command not allowed")
   			return 1
   		end
 
-  		result =  system("git-shell -c \"#{cmd}\"")
+      # Check rights of user
+      if COMMANDS_WRITE.include? match[1]
+        # Let the pre-receive hook authorize so we can match the refs from the parameters
+    		if system("git-shell -c \"#{cmd}\"")
+    		  Log.debug("Write request blocked by pre-receive hook")
+    		  return 1
+  		  else
+          if Auth.can_read?(ARGV[0].strip)
+            Log.debug "User \"#{ARGV[0]}\" was granted read acces to repository"            
+            return 0
+          else
+            Log.tell_user "You are not allowed to access this repository"
+            Log.debug "User \"#{ARGV[0]}\" was denied read acces to repository"
+          end
+		    end
+      else
+        
+      end 
+      
 
   		if !result
-    		Log.debug("System call failed, results: " + result.inspect);
+    		Log.debug("System call failed, results: " + result.inspect)
   			return 1
   		else
   		  return 0
