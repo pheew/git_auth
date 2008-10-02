@@ -43,6 +43,7 @@ module GitAuth
 		if( !allowed.include?(match[1]) )	
 			die("Command not allowed")
 		end
+
 		
 		puts system("/usr/bin/git-shell","git-shell -c #{cmd}")
 		
