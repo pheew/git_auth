@@ -2,17 +2,25 @@
 
 require Dir.pwd + '/git_auth/git_auth.rb'
 
+module GitAuth
 
-
-while input = gets
-        parts = input.split
-
-        puts "REF : " +  parts.last.strip
-        if !GitAuth::Auth.has_rights? `whoami`.strip, parts.last.strip,'w'
-                exit 1
-        end
-
+  class PreReceive
+    
+    def self.process
+      if ENV["GIT_USERNAME"].nil?
+        Log.tell_user "Need GIT_USERNAME in environment"
+        Debug.log "GIT_USERNAME not in environment"
+        exit 1
+      end
+      
+      while input = gets
+        Log.debug "Verifying write request for user \"#{ENV['GIT_USERNAME']}\" for ref: \"#{input.split.last.strip}\""
+        exit 1 unless Auth.can_write? ENV["GIT_USERNAME"], input.split.last.strip
+      end
+      exit 0
+    end
+  end
+  
 end
 
-exit 0
-puts "============================================================"
+GitAuth::PreReceive.process

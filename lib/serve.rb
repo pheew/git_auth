@@ -59,6 +59,7 @@ module GitAuth
       # Check rights of user
       if COMMANDS_WRITE.include? match[1]
         # Let the pre-receive hook authorize so we can match the refs from the parameters
+        ENV["GIT_USERNAME"] = ARGV[0]
     		if system("git-shell -c \"#{cmd}\"")
     		  Log.debug("Write request denied by pre-receive hook")
     		  return 1
