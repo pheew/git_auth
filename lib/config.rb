@@ -23,7 +23,8 @@ module GitAuth
   
     def self.config
       unless @config
-        @config = Config.new "config/auth.conf"
+        config_dir = Pathname.new(File.dirname(__FILE__)).realpath
+        @config = Config.new File.join config_dir, "../config/auth.conf"
         @config.groups.each { |name, gr| gr.expand! }
         @config.rules.each { |rule| rule.expand! }
       end
