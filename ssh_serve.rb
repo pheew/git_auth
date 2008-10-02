@@ -14,7 +14,7 @@ module GitAuth
 
       Log.debug("signing off")
 
-      exit exitcode
+      exit exit_code
     end
   end
 end
