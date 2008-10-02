@@ -8,6 +8,19 @@ module GitAuth
     end
     
   
+    def get_relevant_rules(name, ref)
+      Config.config.rules.select do |rule| 
+        pattern = rule.user_pattern(name)
+        puts "Evaluating " + pattern.source
+        
+        (rule.expanded_members.include? name) && ( !ref.match(pattern).nil?)
+      end
+   end
+    
+    def get_relevant_defaults(ref)
+      Config.config.defaults.select { |default| ref =~ default.pattern }
+    end
+  
     def self.config
       unless @config
         @config = Config.new "config/auth.conf"
@@ -16,6 +29,12 @@ module GitAuth
       end
       @config
     end
+  
+    def self.reload!
+      @config = nil
+      config
+    end
+  
     
     private 
     def process_config_file(config_file_contents)

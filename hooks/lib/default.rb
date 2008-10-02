@@ -1,10 +1,10 @@
 class Default
   
-  attr_accessor :pattern, :rights
+  attr_accessor :pattern, :right
   
-  def initialize(pattern, rights)
-    @pattern = pattern
-    @rights = rights
+  def initialize(pattern, right)
+    @pattern = Regexp.new pattern
+    @right = right
   end
   
 end

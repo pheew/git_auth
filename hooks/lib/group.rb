@@ -20,7 +20,6 @@ module GitAuth
     def self.expand!(members)
       _expanded_members = members.collect do |mem|
         # Check for @ at the start
-        puts "Member: #{mem.inspect}\n"
         if mem[0] == 64
           Config::config.groups[mem[1..(mem.length - 1)]].expand!
         else
