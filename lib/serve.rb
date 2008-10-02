@@ -25,48 +25,43 @@ module GitAuth
   		# get original command
   		cmd = ENV['SSH_ORIGINAL_COMMAND'].strip if ENV['SSH_ORIGINAL_COMMAND']
   		if cmd.nil? || cmd.empty?
-  			die("Need SSH_ORIGINAL_COMMAND in environment")
+  			Log.tell_user("Need SSH_ORIGINAL_COMMAND in environment")
+  			return 1
   		end
-
-	        log = Syslog.open('serve.rb')
-		log.debug("Original command : " + cmd)
-		Syslog.close
+	    
+	    Log.debug("Original command : " + cmd)
 
   		if cmd.include?('\n') 
-  			die("No newlines allowed in command")
+  			Log.tell_user("No newlines allowed in command")
+  			return 1
   		end
 		
-	
+
   		match = ALLOW_RE.match(cmd)
   		if match.nil? || !match
-  			die("Command to run looks dangerous")
+  			Log.tell_user("Command to run looks dangerous")
+  			return 1
   		end
 		
   		allowed = COMMANDS_READONLY
   		allowed += COMMANDS_WRITE if !@options[:readonly]
-
-                log = Syslog.open('serve.rb')
-		log.debug("Allowed : " + allowed.inspect);
-                log.debug("New command : " + cmd);
-                Syslog.close
+  		
+  		Log.debug("Allowed : " + allowed.inspect);
+      Log.debug("New command : " + cmd);
 
   		if( !allowed.include?(match[1]) )	
-  			die("Command not allowed")
+  			Log.tell_user("Command not allowed")
+  			return 1
   		end
 
   		result =  system("git-shell -c \"#{cmd}\"")
-		
-                log = Syslog.open('serve.rb')
-		log.debug("Result from system call : " + result.inspect);
-		Syslog.close
-		if !result
-			exit 1
-		end
-  	end
-	
-  	def self.die(msg)
-  		$stderr << msg
-  		exit 1;
+
+  		if !result
+    		Log.debug("System call failed, results: " + result.inspect);
+  			return 1
+  		else
+  		  return 0
+		  end
   	end
   end
 end
