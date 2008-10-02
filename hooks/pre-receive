@@ -7,7 +7,7 @@ puts "Verifying commit for #{`whoami`.strip}"
 
 while input = gets
         parts = input.split
-
+        Auth::has_rights? `whoami`, pattern
         if( parts.last =~ /refs\/heads\/master/ )
 		puts "No direct commits to master tree"
 			exit 1

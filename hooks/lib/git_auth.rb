@@ -1,4 +1,4 @@
 # load git_auth
-%w(config rule auth).each do |file|
-  require Dir.path file
+%w(config group rule default auth).each do |file|
+  require Dir.pwd + "/lib/" + file
 end

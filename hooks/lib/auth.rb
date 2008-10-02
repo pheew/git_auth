@@ -1,7 +1,7 @@
 module GitAuth
   module Auth
     class Auth
-      def self.has_rights?(user_name, ref, regex)
+      def self.has_rights?(user_name, ref, right)
         
         
         
