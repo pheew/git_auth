@@ -60,28 +60,23 @@ module GitAuth
       if COMMANDS_WRITE.include? match[1]
         # Let the pre-receive hook authorize so we can match the refs from the parameters
     		if system("git-shell -c \"#{cmd}\"")
-    		  Log.debug("Write request blocked by pre-receive hook")
+    		  Log.debug("Write request denied by pre-receive hook")
     		  return 1
   		  else
-          if Auth.can_read?(ARGV[0].strip)
-            Log.debug "User \"#{ARGV[0]}\" was granted read acces to repository"            
-            return 0
-          else
-            Log.tell_user "You are not allowed to access this repository"
-            Log.debug "User \"#{ARGV[0]}\" was denied read acces to repository"
-          end
+          Log.debug("Write request granted by pre-receive hook")
+          return 0
 		    end
       else
-        
+        if Auth.can_read?(ARGV[0].strip)
+          Log.debug "User \"#{ARGV[0]}\" was granted read acces to repository"            
+          return 0
+        else
+          Log.tell_user "You are not allowed to access this repository"
+          Log.debug "User \"#{ARGV[0]}\" was denied read acces to repository"
+          return 1
+        end
       end 
       
-
-  		if !result
-    		Log.debug("System call failed, results: " + result.inspect)
-  			return 1
-  		else
-  		  return 0
-		  end
   	end
   end
 end
