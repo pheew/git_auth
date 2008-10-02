@@ -1,0 +1,13 @@
+[settings]
+debug
+
+[groups]
+admins: mark, niek
+developers: @admins, tim, casper, julian
+
+[readers]
+@developers
+
+[writers]
+@admins, tim: refs/heads/master
+@developers: refs/heads/dev/{user}

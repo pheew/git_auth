@@ -1,13 +1,12 @@
 module GitAuth
   class Rule
   
-    attr_accessor :members,:pattern, :right
+    attr_accessor :members, :pattern
     attr_reader :expanded_members
     
-    def initialize(members, pattern, right)
+    def initialize(members, pattern)
       @members = members
       @pattern = pattern
-      @right = right
     end
     
     def user_pattern(user)

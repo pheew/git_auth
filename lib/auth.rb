@@ -1,23 +1,30 @@
 module GitAuth
   class Auth
-    def self.has_rights?(user_name, ref, right)
+    
+    def self.can_write?(user_name, ref)
       
-      defaults = Config.config.get_relevant_defaults ref
-      rules = Config.config.get_relevant_rules user_name, ref
+      Log.debug "Verifying write permissions for user \"#{user_name}\" with pattern \"#{ref}\""
+      
+      
       allowed = false
-  
-      defaults.each do |d|
-        allowed = d.right.include? right
-      end
-      puts "After defaults processing: #{allowed}"
       
-      rules.each do |r|
-        allowed = r.right.include? right
-      end
-      puts "After rules processing: #{allowed}"
+      Config.config.writers.each do |writer|
+        if writer.expanded_members.include?(user_name) && ref =~ writer.user_pattern(user_name)
+          allowed = true
+          break
+        end
+      end    
       
+      Log.debug "User was #{ allowed ? 'allowed' : 'denied'} write access for ref: \"#{ref}\""
+        
       allowed
       
     end
+    
+    def self.can_read?(user)
+      Log.debug "Verifying read permissions for user \"#{user}\""
+      Config.config.readers.expanded_members.include? user
+    end
+    
   end
 end
