@@ -69,8 +69,15 @@ module GitAuth
 		    end
       else
         if Auth.can_read?(ARGV[0].strip)
-          Log.debug "User \"#{ARGV[0]}\" was granted read acces to repository"            
-          return 0
+          Log.debug "User \"#{ARGV[0]}\" was granted read acces to repository"
+          if system("git-shell -c \"#{cmd}\"")
+            return 0
+          else
+            Log.debug "Command \"#{cmd}\" failed"
+            return 1
+          end
+          
+
         else
           Log.tell_user "You are not allowed to access this repository"
           Log.debug "User \"#{ARGV[0]}\" was denied read acces to repository"

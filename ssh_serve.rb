@@ -11,7 +11,7 @@ module GitAuth
 
       # Process request
       exit_code = Serve.serve
-
+      
       Log.debug("signing off")
 
       exit exit_code
