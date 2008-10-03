@@ -11,13 +11,18 @@ module GitAuth
       
       if ENV["GIT_USERNAME"].nil?
         Log.tell_user "Need GIT_USERNAME in environment"
-        Debug.log "GIT_USERNAME not in environment"
+        Log.debug "GIT_USERNAME not in environment"
         exit 1
       end
       
       while input = gets
         Log.debug "Verifying write request for user \"#{ENV['GIT_USERNAME']}\" for ref: \"#{input.split.last.strip}\""
-        exit 1 unless Auth.can_write?(ENV["GIT_USERNAME"], input.split.last.strip)
+        unless Auth.can_write?(ENV["GIT_USERNAME"], input.split.last.strip)
+		Log.tell_user "***"
+		Log.tell_user "*** You don't have permission to push to this location"
+		Log.tell_user "***"
+		exit 1
+	end
       end
       exit 0
     end
