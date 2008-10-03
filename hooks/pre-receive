@@ -15,7 +15,7 @@ module GitAuth
       
       while input = gets
         Log.debug "Verifying write request for user \"#{ENV['GIT_USERNAME']}\" for ref: \"#{input.split.last.strip}\""
-        exit 1 unless Auth.can_write? ENV["GIT_USERNAME"], input.split.last.strip
+        exit 1 unless Auth.can_write?(ENV["GIT_USERNAME"], input.split.last.strip)
       end
       exit 0
     end

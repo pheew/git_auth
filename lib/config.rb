@@ -30,7 +30,7 @@ module GitAuth
     def process_config_file(config_file_contents)
       _settings, _groups, _readers, _writers = config_file_contents.match(/\[settings\](.*)\[groups\](.*)\[readers\](.*)\[writers\](.*)/mix).captures.collect { |section| section.strip }
       
-      @settings = _settings.split("\n").reject { |s| s.strip.empty? }.collect { |s| s.strip } 
+      @settings = _settings.split("\n").reject { |s| s.strip.empty? }.collect { |s| s.strip.downcase } 
       
       @groups = {}
       _groups.split("\n").reject { |g| g.strip.empty? }.each do |group|
