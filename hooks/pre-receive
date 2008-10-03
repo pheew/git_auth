@@ -7,6 +7,8 @@ module GitAuth
   class PreReceive
     
     def self.process
+      Log.debug "In pre-receive hook"
+      
       if ENV["GIT_USERNAME"].nil?
         Log.tell_user "Need GIT_USERNAME in environment"
         Debug.log "GIT_USERNAME not in environment"
