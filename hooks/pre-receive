@@ -18,11 +18,11 @@ module GitAuth
       while input = gets
         Log.debug "Verifying write request for user \"#{ENV['GIT_USERNAME']}\" for ref: \"#{input.split.last.strip}\""
         unless Auth.can_write?(ENV["GIT_USERNAME"], input.split.last.strip)
-		Log.tell_user "***"
-		Log.tell_user "*** You don't have permission to push to this location"
-		Log.tell_user "***"
-		exit 1
-	end
+      		Log.tell_user "***"
+      		Log.tell_user "*** You don't have permission to push to this location"
+      		Log.tell_user "***"
+      		exit 1
+      	end
       end
       exit 0
     end
