@@ -2,7 +2,7 @@ module GitAuth
   class Group
   
     attr_accessor :name, :members
-    attr_reader :repo
+    attr_reader :expanded_members, :repo
     
     def initialize(name, members, repo)
       @repo = repo;
@@ -11,7 +11,7 @@ module GitAuth
     end
   
   
-    def expanded_members
+    def expand!
       unless @expanded_members
         @expanded_members = Group.expand!(@members, @repo)
       end

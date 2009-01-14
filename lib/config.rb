@@ -17,6 +17,7 @@ module GitAuth
         current_path = Pathname.new(File.dirname(__FILE__)).realpath
         
         @config = Config.new( File.join( current_path, "../config/auth.conf" ), repo)
+        @config.groups.each { |name, gr| gr.expand! }
       
         current_path = Pathname.new( File.join( @config.settings["git_dir"] , repo, "git_auth.conf"  )).realpath
       	@config.process_config_file(File.read(current_path), false)
