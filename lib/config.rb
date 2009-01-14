@@ -13,14 +13,14 @@ module GitAuth
 
     def self.current_config(repo)
       
-  	
         current_path = Pathname.new(File.dirname(__FILE__)).realpath
         
         @config = Config.new( File.join( current_path, "../config/auth.conf" ), repo)
-        @config.groups.each { |name, gr| gr.expand! }
       
         current_path = Pathname.new( File.join( @config.settings["git_dir"] , repo, "git_auth.conf"  )).realpath
       	@config.process_config_file(File.read(current_path), false)
+      	
+		@config.groups.each { |name, gr| gr.expand! }
         
       	@config
     end
@@ -44,12 +44,12 @@ module GitAuth
 				      @groups = {} if global
 				      data.split("\n").reject { |g| g.strip.empty? }.each do |group|
 				        name, members = group.strip.split("=").collect { |part| part.strip }
-				        @groups[name] = Group.new(name, members.split(",").collect { |mem| mem.strip }, repo)
+				        @groups[name] = Group.new(name, members.split(",").collect { |mem| mem.strip }, self)
 				      end
 				
 				when "readers" :
 					@readers = Group.new("Readers", 
-							 data.split("\n").reject { |r| r.strip.empty? }.collect { |r| r.strip }, repo)
+							 data.split("\n").reject { |r| r.strip.empty? }.collect { |r| r.strip }, self)
  				
  				when "writers" :
 					@writers = []
