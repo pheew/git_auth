@@ -1,5 +1,3 @@
-require 'syslog'
-
 module GitAuth
   
   class Log
@@ -9,11 +7,7 @@ module GitAuth
     end
     
     def self.debug(msg)
-      if Config.config.settings.include? "debug"      
-        Syslog.open "GitAuth ssh_serve.rb" do |log|
-          log.debug msg
-        end
-      end
+      	STDERR << msg << "\n"
     end
     
   end

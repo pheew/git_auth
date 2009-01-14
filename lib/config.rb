@@ -1,54 +1,73 @@
 module GitAuth
   class Config
     
-    attr_accessor :settings, :groups, :readers, :writers
+    @@REGEX_SECTIONS = /\[([^\]]+)\]([^\[]+)/mix
     
-    def initialize(file)
+    attr_accessor :settings, :groups, :readers, :writers
+    attr_reader :repo
+    
+    def initialize(file, repo)
+	  @repo = repo
       process_config_file File.read(file)
     end
 
-    def self.config
-      unless @config
+    def self.current_config(repo)
+      
+  	
         current_path = Pathname.new(File.dirname(__FILE__)).realpath
-        @config = Config.new( File.join( current_path, "../config/auth.conf" ))
-        @config.groups.each { |name, gr| gr.expand! }
         
-        @config.readers.expand!
+        @config = Config.new( File.join( current_path, "../config/auth.conf" ), repo)
+        #@config.groups.each { |name, gr| gr.expand! }
+      
+        current_path = Pathname.new( File.join( @config.settings["git_dir"] , repo, "git_auth.conf"  )).realpath
+      	@config.process_config_file(File.read(current_path), false)
         
-        @config.writers.each { |writer| writer.expand! }
-      end
-      @config
+      	@config
     end
   
-    def self.reload!
-      @config = nil
-      config
-    end
-  
+    def process_config_file(config_file_contents, global = true )
+      
+      sections = config_file_contents.scan(@@REGEX_SECTIONS)
+      
+      sections.each do |name, data|
+      		case name.strip
+  				when "settings" :
+				     
+				     @settings = {} if global
+				     
+				      data.split("\n").reject { |g| g.strip.empty? }.each do |setting|
+				        key, value = setting.strip.split("=").collect { |part| part.strip }
+				        @settings[key] = value
+				      end
+				      
+				when "groups" :
+				      @groups = {} if global
+				      data.split("\n").reject { |g| g.strip.empty? }.each do |group|
+				        name, members = group.strip.split("=").collect { |part| part.strip }
+				        @groups[name] = Group.new(name, members.split(",").collect { |mem| mem.strip }, repo)
+				      end
+				
+				when "readers" :
+					@readers = Group.new("Readers", 
+							 data.split("\n").reject { |r| r.strip.empty? }.collect { |r| r.strip }, repo)
+ 				
+ 				when "writers" :
+					@writers = []
+  					data.split("\n").reject { |r| r.strip.empty? }.each do |rule|
     
-    private 
-    def process_config_file(config_file_contents)
-      _settings, _groups, _readers, _writers = config_file_contents.match(/\[settings\](.*)\[groups\](.*)\[readers\](.*)\[writers\](.*)/mix).captures.collect { |section| section.strip }
-      
-      @settings = _settings.split("\n").reject { |s| s.strip.empty? }.collect { |s| s.strip.downcase } 
-      
-      @groups = {}
-      _groups.split("\n").reject { |g| g.strip.empty? }.each do |group|
-        name, members = group.strip.split(":").collect { |part| part.strip }
-        @groups[name] = Group.new(name, members.split(",").collect { |mem| mem.strip })
-      end
-      
-      @readers = Group.new("Readers",  _readers.split("\n").reject { |r| r.strip.empty? }.collect { |r| r.strip })
-        
-      @writers = []
-      _writers.split("\n").reject { |r| r.strip.empty? }.each do |rule|
-        
-        members_raw, pattern = rule.strip.split(":").collect { |p| p.strip }
-        members = members_raw.split(",").collect { |m| m.strip }
+				        members_raw, pattern = rule.strip.split("=").collect { |p| p.strip }
+	    				members = members_raw.split(",").collect { |m| m.strip }
 
-        @writers << Rule.new(members, pattern)
-      end 
+    					@writers << Rule.new(members, pattern)
+			      	end
+				
+  			end
+  	  end
+  	  
+  	  Log.debug(sections.inspect)
+
     end
+    
     
   end
   

@@ -1,13 +1,12 @@
 require 'optparse'
-require 'syslog'
 
 module GitAuth	
   class Serve
 
-    COMMANDS_READONLY = ['git-upload-pack']
+	  COMMANDS_READONLY = ['git-upload-pack']
 	  COMMANDS_WRITE = ['git-receive-pack']
-	  ALLOW_RE = Regexp.compile("^(git-(?:receive|upload)-pack) '[a-zA-Z][a-zA-Z0-9@._-]*(/[a-zA-Z][a-zA-Z0-9@._-]*)*'$")
-
+	  ALLOW_RE = Regexp.compile("^(git-(?:receive|upload)-pack) '([a-zA-Z][a-zA-Z0-9@._-]*(/[a-zA-Z][a-zA-Z0-9@._-]*)*)'$")
+	  
 	  @options = Hash.new
 	
 	  def self.serve
@@ -49,7 +48,9 @@ module GitAuth
   		allowed += COMMANDS_WRITE if !@options[:readonly]
   		
   		Log.debug("Allowed : " + allowed.inspect)
-      Log.debug("New command : " + cmd)
+      	Log.debug("New command : " + cmd)
+      
+      	Log.debug("Repository : " + match[2])
 
   		if( !allowed.include?(match[1]) )	
   			Log.tell_user("Command not allowed")
@@ -60,6 +61,8 @@ module GitAuth
       if COMMANDS_WRITE.include? match[1]
         # Let the pre-receive hook authorize so we can match the refs from the parameters
         ENV["GIT_USERNAME"] = ARGV[0]
+        ENV["GIT_REPO"] = match[2]
+        
     		if !system("git-shell -c \"#{cmd}\"")
     		  Log.debug("Write request denied by pre-receive hook")
     		  return 1
@@ -68,7 +71,7 @@ module GitAuth
           return 0
 		    end
       else
-        if Auth.can_read?(ARGV[0].strip)
+        if Auth.can_read?(ARGV[0].strip, match[2])
           Log.debug "User \"#{ARGV[0]}\" was granted read acces to repository"
           if !system("git-shell -c \"#{cmd}\"")
             return 0

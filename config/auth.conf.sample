@@ -1,13 +1,7 @@
 [settings]
-debug
+debug=true
+git_dir=f:/code/
 
 [groups]
-admins: mark, niek
-developers: @admins, tim, casper, julian
-
-[readers]
-@developers
-
-[writers]
-@admins, tim: refs/heads/master
-@developers: refs/heads/dev/{user}
+admins=mark, niek
+developers=@admins, tim, casper, julian
