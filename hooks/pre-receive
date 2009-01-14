@@ -1,12 +1,13 @@
 #!/usr/bin/env ruby
 
-require File.join(ENV["GITAUTH_DIR"] + "git_auth.rb")
+require "/storage/apps/git_auth/git_auth.rb"
 
 module GitAuth
 
   class PreReceive
     
     def self.process
+
       Log.debug "In pre-receive hook"
       
       if ENV["GIT_USERNAME"].nil?
@@ -24,6 +25,7 @@ module GitAuth
       		exit 1
       	end
       end
+
       exit 0
     end
   end

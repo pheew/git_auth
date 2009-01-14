@@ -56,29 +56,20 @@ module GitAuth
   			return 1
   		end
 
+Log.debug("Current dir : " + Dir.pwd)
       # Check rights of user
       if COMMANDS_WRITE.include? match[1]
         # Let the pre-receive hook authorize so we can match the refs from the parameters
         ENV["GIT_USERNAME"] = ARGV[0]
         ENV["GIT_REPO"] = match[2]
-        ENV["GITAUTH_DIR"] = File.join( Dir.pwd , "../" )
-        
-    		if !system("git-shell -c \"#{cmd}\"")
-    		  Log.debug("Write request denied by pre-receive hook")
-    		  return 1
-  		  else
-          Log.debug("Write request granted by pre-receive hook")
-          return 0
-		    end
+        ENV["GITAUTH_DIR"] = "/storage/apps/git_auth/"
+
+        system("git-shell -c \"#{cmd}\"")
       else
         if Auth.can_read?(ARGV[0].strip, match[2])
           Log.debug "User \"#{ARGV[0]}\" was granted read acces to repository"
-          if !system("git-shell -c \"#{cmd}\"")
-            return 0
-          else
-            Log.debug "Command \"#{cmd}\" failed"
-            return 1
-          end
+          system("git-shell -c \"#{cmd}\"")
+
         else
           Log.tell_user "You are not allowed to access this repository"
           Log.debug "User \"#{ARGV[0]}\" was denied read acces to repository"

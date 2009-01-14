@@ -7,8 +7,12 @@ module GitAuth
     attr_reader :repo
     
     def initialize(file, repo)
-	  @repo = repo
-      process_config_file File.read(file)
+ 	  @repo = repo
+	  @groups = {}
+	  @writers = []
+          @readers = Group.new("Readers", [], self)
+
+ 	  process_config_file File.read(file)
     end
 
     def self.current_config(repo)
@@ -20,9 +24,10 @@ module GitAuth
         current_path = Pathname.new( File.join( @config.settings["git_dir"] , repo, "git_auth.conf"  )).realpath
       	@config.process_config_file(File.read(current_path), false)
       	
-		@config.groups.each { |name, gr| gr.expand! }
-		@config.readers.expand!
-        
+	@config.groups.each { |name, gr| gr.expand! }
+	@config.writers.each { |r| r.expand! }
+	@config.readers.expand!
+
       	@config
     end
   
@@ -59,7 +64,7 @@ module GitAuth
 				        members_raw, pattern = rule.strip.split("=").collect { |p| p.strip }
 	    				members = members_raw.split(",").collect { |m| m.strip }
 
-    					@writers << Rule.new(members, pattern)
+    					@writers << Rule.new(members, pattern, self)
 			      	end
 				
   			end
