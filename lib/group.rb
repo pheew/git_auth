@@ -19,10 +19,6 @@ module GitAuth
     end
   
     def self.expand!(members, repo)
-    	Log.debug("Expanding " + repo)
-    	Log.debug("Expanding " + members.inspect)
-    	
-    	
       _expanded_members = members.collect do |mem|
         # Check for @ at the start
         if mem[0] == 64
