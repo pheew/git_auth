@@ -49,7 +49,6 @@ module GitAuth
   		
   		Log.debug("Allowed : " + allowed.inspect)
       	Log.debug("New command : " + cmd)
-      
       	Log.debug("Repository : " + match[2])
 
   		if( !allowed.include?(match[1]) )	

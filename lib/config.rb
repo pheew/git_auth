@@ -63,8 +63,6 @@ module GitAuth
   			end
   	  end
   	  
-  	  Log.debug(sections.inspect)
-
     end
     
     
