@@ -2,7 +2,7 @@ module GitAuth
   class Group
   
     attr_accessor :name, :members
-    attr_reader :expanded_members, :repo
+    attr_reader :repo
     
     def initialize(name, members, repo)
       @repo = repo;
@@ -11,7 +11,7 @@ module GitAuth
     end
   
   
-    def expand!
+    def expanded_members
       unless @expanded_members
         @expanded_members = Group.expand!(@members, @repo)
       end
@@ -19,6 +19,10 @@ module GitAuth
     end
   
     def self.expand!(members, repo)
+    	Log.debug("Expanding " + repo)
+    	Log.debug("Expanding " + members.inspect)
+    	
+    	
       _expanded_members = members.collect do |mem|
         # Check for @ at the start
         if mem[0] == 64
