@@ -21,6 +21,7 @@ module GitAuth
       	@config.process_config_file(File.read(current_path), false)
       	
 		@config.groups.each { |name, gr| gr.expand! }
+		@config.readers.expand!
         
       	@config
     end
