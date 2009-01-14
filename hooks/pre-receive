@@ -31,3 +31,4 @@ module GitAuth
 end
 
 GitAuth::PreReceive.process
+
