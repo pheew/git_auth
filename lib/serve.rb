@@ -61,6 +61,7 @@ module GitAuth
         # Let the pre-receive hook authorize so we can match the refs from the parameters
         ENV["GIT_USERNAME"] = ARGV[0]
         ENV["GIT_REPO"] = match[2]
+        ENV["GITAUTH_DIR"] = File.join( Dir.pwd , "../" )
         
     		if !system("git-shell -c \"#{cmd}\"")
     		  Log.debug("Write request denied by pre-receive hook")

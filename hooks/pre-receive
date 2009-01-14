@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-require Dir.pwd + '/git_auth/git_auth.rb'
+require File.join(ENV["GITAUTH_DIR"] + "git_auth.rb")
 
 module GitAuth
 
