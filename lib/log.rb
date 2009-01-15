@@ -11,7 +11,7 @@ module GitAuth
 	 Syslog.open "GitAuth ssh_serve.rb" do |log|
 	log.debug msg
 	end
-      	STDERR << msg << "\n"
+      #	STDERR << msg << "\n"
     end
     
   end
